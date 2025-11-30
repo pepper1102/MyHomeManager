@@ -1,0 +1,16 @@
+# Firebase設定ファイル（APIキーを含むため）
+js/firebase-keys.js
+
+# Node modules（将来的に使用する可能性）
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
