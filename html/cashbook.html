@@ -7,11 +7,18 @@
   <title>出納帳 - MyHomeManager</title>
   <link rel="stylesheet" href="../css/common.css" />
   <link rel="stylesheet" href="../css/cashbook.css" />
+  <!-- 共通モジュール -->
+  <script defer src="../js/common/error-handler.js"></script>
+  <script defer src="../js/common/utils.js"></script>
+  <script defer src="../js/common/storage.js"></script>
+  <script defer src="../js/common/sidebar.js"></script>
+  <!-- ページ固有のスクリプト -->
+  <script defer src="../js/cashbook.js"></script>
 </head>
 
 <body>
   <header>
-    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="メニュー を開く" aria-expanded="false">☰</button>
+    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="メニューを開く" aria-expanded="false">☰</button>
   </header>
 
   <aside id="sidebar" class="sidebar" aria-hidden="true">
@@ -91,7 +98,6 @@
     </section>
   </main>
 
-  <script defer src="../js/cashbook.js"></script>
 </body>
 
 </html>
