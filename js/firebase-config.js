@@ -17,6 +17,18 @@ const firebaseConfig = FIREBASE_KEYS;
 try {
     firebase.initializeApp(firebaseConfig);
     console.log('Firebase initialized successfully');
+
+    // オフライン永続化: 接続状態の監視
+    firebase.database().ref('.info/connected').on('value', (snapshot) => {
+        if (snapshot.val() === true) {
+            console.log('Firebase: オンライン接続');
+        } else {
+            console.log('Firebase: オフライン（データはローカルキャッシュされます）');
+        }
+    });
+
+    // Firebaseイベントを発火（初期化完了通知）
+    window.dispatchEvent(new Event('firebaseInitialized'));
 } catch (error) {
     console.error('Firebase initialization error:', error);
     alert('Firebaseの初期化に失敗しました。設定を確認してください。');

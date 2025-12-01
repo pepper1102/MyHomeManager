@@ -127,7 +127,8 @@
     }
 
     /**
-     * ログインUIを表示
+     * ログインUIを表示（未ログイン時）
+     * LocalStorageモードで動作可能
      */
     function showLoginUI() {
         // ログインボタンを表示
@@ -143,12 +144,14 @@
             userInfo.style.display = 'none';
         }
 
-        // メインコンテンツを非表示（オプション）
+        // メインコンテンツは表示したまま（LocalStorageモードで動作）
         const main = document.querySelector('main');
         if (main) {
-            main.style.opacity = '0.3';
-            main.style.pointerEvents = 'none';
+            main.style.opacity = '1';
+            main.style.pointerEvents = 'auto';
         }
+
+        console.log('LocalStorageモードで動作中（ログインすると家族とデータ共有可能）');
     }
 
     /**

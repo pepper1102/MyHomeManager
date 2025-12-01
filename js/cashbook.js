@@ -601,7 +601,8 @@
 
       // データマイグレーション実行（初回のみ）
       migrateData();
-
+      entries = data ? Object.values(data) : [];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
       render();
       console.log('Firebaseからデータ取得:', entries.length, '件');
     });
@@ -611,7 +612,12 @@
   };
 
   // ===== 初期化 =====
-
+  // LocalStorageからデータ読み込み（未ログイン時でも表示）
+  entries = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  if (entries.length > 0) {
+    render();
+    console.log('LocalStorageからデータ読み込み:', entries.length, '件');
+  }
   // お返しUIの初期化
   initializeReturnUI();
 
