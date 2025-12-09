@@ -48,11 +48,20 @@
         needsMigration = true;
         entry.id = generateId();
         entry.relatedTo = null;
-        entry.hasReturn = false;
+        entry.isItem = false;
+        entry.itemDescription = '';
       }
       // relatedToがない場合は追加（後方互換性）
       if (entry.relatedTo === undefined) {
         entry.relatedTo = null;
+      }
+      // isItemがない場合は追加
+      if (entry.isItem === undefined) {
+        entry.isItem = false;
+      }
+      // itemDescriptionがない場合は追加
+      if (entry.itemDescription === undefined) {
+        entry.itemDescription = '';
       }
       // hasReturnがない場合は追加
       if (entry.hasReturn === undefined) {
@@ -114,9 +123,18 @@
       }
     }
 
+    // 金額/品物の表示
+    let amountDisplay;
+    if (e.isItem) {
+      // 現物の場合
+      amountDisplay = `${escapeHtml(e.itemDescription)}（${formatYen(Math.abs(amount))}相当）`;
+    } else {
+      // 金銭の場合
+      amountDisplay = `${sign}${formatYen(Math.abs(amount))}`;
+    }
     tr.innerHTML = `
       <td>${e.date}</td>
-      <td class="${amountClass}">${sign}${formatYen(Math.abs(amount))}</td>
+      <td class="${amountClass}">${amountDisplay}</td>
       <td>${escapeHtml(e.person)}</td>
       <td>${e.type}</td>
       <td class="relation-info">${relationInfo}</td>
@@ -191,11 +209,14 @@
 
 
   function save() {
+    // LocalStorageに必ず保存（ログイン有無に関わらず）
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    console.log('LocalStorageに保存:', entries.length, '件');
+    // Firebaseにも保存（ログイン時のみ）
     if (!entriesRef) {
-      console.warn('未ログイン: データは保存されません');
+      console.warn('未ログイン: LocalStorageのみに保存');
       return;
     }
-
     const data = {};
     entries.forEach(entry => {
       // 更新日時を更新
@@ -341,15 +362,22 @@
       e.preventDefault();
 
       const date = document.getElementById('entry-date').value;
+      const entryMode = document.querySelector('input[name="entry-mode"]:checked').value;
+      const isItem = entryMode === 'item';
+      const itemDescription = isItem ? document.getElementById('entry-item-description').value.trim() : '';
       const amount = parseFloat(document.getElementById('entry-amount').value) || 0;
       const person = document.getElementById('entry-person').value.trim();
       const type = document.getElementById('entry-type').value;
-
       if (!date || !person) return;
-
+      if (isItem && !itemDescription) {
+        alert('現物の場合、品物の説明は必須です');
+        return;
+      }
       const newEntry = {
         id: generateId(),
         date,
+        isItem,
+        itemDescription,
         amount,
         person,
         type,
@@ -620,6 +648,26 @@
   }
   // お返しUIの初期化
   initializeReturnUI();
+  // 金銭/現物切り替えの制御
+  const itemRadio = document.querySelector('input[name="entry-mode"][value="item"]');
+  const moneyRadio = document.querySelector('input[name="entry-mode"][value="money"]');
+  const itemDescriptionInput = document.getElementById('entry-item-description');
+  function updateEntryMode() {
+    const isItem = itemRadio && itemRadio.checked;
+    if (itemDescriptionInput) {
+      itemDescriptionInput.style.display = isItem ? 'block' : 'none';
+      if (isItem) {
+        itemDescriptionInput.required = true;
+      } else {
+        itemDescriptionInput.required = false;
+        itemDescriptionInput.value = '';
+      }
+    }
+  }
+  if (moneyRadio && itemRadio) {
+    moneyRadio.addEventListener('change', updateEntryMode);
+    itemRadio.addEventListener('change', updateEntryMode);
+  }
 
   // 初期表示時に日付フィールドに今日の日付を設定
   setTodayDate();
