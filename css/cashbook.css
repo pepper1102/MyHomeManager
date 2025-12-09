@@ -60,6 +60,50 @@ td {
   text-align: left;
 }
 
+/* 列幅の固定（インライン編集時のガタつき防止） */
+th:nth-child(1),
+td:nth-child(1) {
+  width: 140px;
+  min-width: 140px;
+}
+
+/* 日付 */
+th:nth-child(2),
+td:nth-child(2) {
+  width: 350px;
+  min-width: 350px;
+}
+
+/* 金額/品物 - 現物モード用に広めに確保 */
+th:nth-child(3),
+td:nth-child(3) {
+  width: 150px;
+  min-width: 150px;
+}
+
+/* 相手 */
+th:nth-child(4),
+td:nth-child(4) {
+  width: 100px;
+  min-width: 100px;
+}
+
+/* 種別 */
+th:nth-child(5),
+td:nth-child(5) {
+  width: 150px;
+  min-width: 150px;
+}
+
+/* 関連 */
+th:nth-child(6),
+td:nth-child(6) {
+  width: 140px;
+  min-width: 140px;
+}
+
+/* 操作 */
+
 /* データアクション */
 .data-actions {
   display: flex;
@@ -193,4 +237,50 @@ td .cancel:hover {
   font-size: 0.85rem;
   color: #666;
   white-space: nowrap;
+}
+
+/* インライン編集時のエントリモード選択 */
+.inline-entry-mode {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.inline-entry-mode label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+}
+
+/* インライン編集時の入力フィールドグループ */
+.inline-input-group {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.3rem;
+  /* モード選択との間隔 */
+  align-items: center;
+}
+
+/* インライン編集時の品物説明 */
+.inline-item-description {
+  flex: 2;
+  /* 品物説明を広めに */
+  width: auto;
+  margin-top: 0;
+  padding: 0.4rem;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+/* インライン編集時の金額入力 */
+td .inline-input-group input[type="number"].edit-amount {
+  flex: 1;
+  /* 金額も伸縮 */
+  width: auto;
+  margin-top: 0;
 }

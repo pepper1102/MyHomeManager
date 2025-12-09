@@ -162,7 +162,22 @@
 
     tr.innerHTML = `
       <td><input type="date" class="edit-date" value="${e.date}" /></td>
-      <td><input type="number" class="edit-amount" value="${amount}" step="0.01" /></td>
+      <td>
+        <div class="inline-entry-mode">
+          <label>
+            <input type="radio" name="edit-mode-${idx}" value="money" ${!e.isItem ? 'checked' : ''} />
+            金銭
+          </label>
+          <label>
+            <input type="radio" name="edit-mode-${idx}" value="item" ${e.isItem ? 'checked' : ''} />
+            現物
+          </label>
+        </div>
+        <div class="inline-input-group">
+          <input type="text" class="inline-item-description" placeholder="品物の説明" value="${escapeHtml(e.itemDescription || '')}" style="display: ${e.isItem ? 'block' : 'none'};" />
+          <input type="number" class="edit-amount" value="${amount}" step="0.01" />
+        </div>
+      </td>
       <td><input type="text" class="edit-person" value="${escapeHtml(e.person)}" list="person-list" /></td>
       <td>
         <select class="edit-type">
@@ -182,8 +197,24 @@
       </td>
     `;
 
-    // 最初の入力フィールドにフォーカス
+    // ラジオボタンの変更イベントを設定
     setTimeout(() => {
+      const moneyRadio = tr.querySelector(`input[name="edit-mode-${idx}"][value="money"]`);
+      const itemRadio = tr.querySelector(`input[name="edit-mode-${idx}"][value="item"]`);
+      const itemDescInput = tr.querySelector('.inline-item-description');
+
+      const toggleItemDescription = () => {
+        if (itemDescInput) {
+          itemDescInput.style.display = itemRadio.checked ? 'block' : 'none';
+        }
+      };
+
+      if (moneyRadio && itemRadio) {
+        moneyRadio.addEventListener('change', toggleItemDescription);
+        itemRadio.addEventListener('change', toggleItemDescription);
+      }
+
+      // 最初の入力フィールドにフォーカス
       const dateInput = tr.querySelector('.edit-date');
       if (dateInput) dateInput.focus();
     }, 0);
@@ -262,12 +293,32 @@
     const person = tr.querySelector('.edit-person').value.trim();
     const type = tr.querySelector('.edit-type').value;
 
+    // 現物/金銭モードの取得
+    const itemRadio = tr.querySelector(`input[name="edit-mode-${idx}"][value="item"]`);
+    const isItem = itemRadio ? itemRadio.checked : false;
+    const itemDescription = isItem ? tr.querySelector('.inline-item-description').value.trim() : '';
+
     if (!date || !person) {
       alert('日付と相手の名前は必須です');
       return;
     }
 
-    entries[idx] = { ...entries[idx], date, amount, person, type };
+    if (isItem && !itemDescription) {
+      alert('現物の場合、品物の説明は必須です');
+      return;
+    }
+
+    // 既存のエントリ情報を保持しつつ更新
+    entries[idx] = {
+      ...entries[idx],
+      date,
+      amount,
+      person,
+      type,
+      isItem,
+      itemDescription: isItem ? itemDescription : ''
+    };
+
     save();
     editingIndex = null;
     render();
